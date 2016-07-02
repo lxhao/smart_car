@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <wificar.MySurfaceView
+        android:id="@+id/mySurfaceViewVideo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+
+    <Button
+        android:id="@+id/TakePhoto"
+        android:layout_width="66dp"
+        android:layout_height="55dp"
+        android:text="拍照" />
+
+    <Button
+        android:id="@+id/ViewPhoto"
+        android:layout_width="66dp"
+        android:layout_height="55dp"
+        android:layout_toRightOf="@+id/TakePhoto"
+        android:layout_x="90dp"
+        android:text="查看" />
+
+    <!-- 小车控制按钮 -->
+	<LinearLayout 
+	    android:id="@+id/showControlButton"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/TakePhoto"
+	    >
+	    <TextView 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:textSize="14sp"
+	        android:textColor="#ff0000"
+	        android:text=" 		小  车  控  制  按  钮  "
+	        />
+	</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/controlButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/showControlButton"
+         >
+
+         <Button
+            android:id="@+id/button_forward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="向前" />
+         <Button
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/button_forward"
+            android:id="@+id/button_left"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="向左" />
+
+        <Button
+            android:layout_toRightOf="@id/button_left"
+            android:id="@+id/button_stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/button_left"
+            android:text="停止" />
+        <Button
+            android:id="@+id/button_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_stop"
+            android:layout_alignBottom="@id/button_stop"
+            android:text="向右" />
+        
+
+        <Button
+            android:id="@+id/button_backward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/button_stop"
+            android:layout_below="@id/button_stop"
+            android:text="向后" />
+    </RelativeLayout>
+    
+     <!-- 摄像头控制按钮 -->
+	<LinearLayout 
+	    android:id="@+id/showVideoButton"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/controlButton"
+	    >
+	    <TextView 
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:textSize="14sp"
+	        android:textColor="#ff0000"
+	        android:text=" 	摄  像  头  控  制  按  钮"
+	        />
+	</LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/showVideoButton"
+         >
+         <Button
+            android:id="@+id/button_turnUp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="上转" />
+         <Button
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/button_turnUp"
+            android:id="@+id/button_turnLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="左转" />
+
+        <Button
+            android:layout_toRightOf="@id/button_turnLeft"
+            android:id="@+id/button_resume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/button_turnLeft"
+            android:text="复位" />
+        <Button
+            android:id="@+id/button_turnRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_resume"
+            android:layout_alignBottom="@id/button_resume"
+            android:text="右转" />
+        <Button
+            android:id="@+id/button_turnDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/button_resume"
+            android:layout_below="@id/button_resume"
+            android:text="下转" />
+       
+    </RelativeLayout>
+    
+</RelativeLayout>
