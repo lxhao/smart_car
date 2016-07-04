@@ -30,7 +30,7 @@ public class MyMainFrm extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         /*
-		 * 这个类是第一个界面，在界面中可以输入无线摄像头的获取视频数据流地址
+         * 这个类是第一个界面，在界面中可以输入无线摄像头的获取视频数据流地址
 		 * edIP：视频地址文本框
 		 * Button_go 启动按钮
 		 * 
@@ -84,7 +84,7 @@ public class MyMainFrm extends Activity {
                 //生成一个Intent对象
                 Intent intent = new Intent();
                 //在Intent对象当中添加一个键值对
-                intent.putExtra("CameraIp", videoUrl);
+                intent.putExtra("cameraIp", videoUrl);
                 intent.putExtra("ControlUrl", controlUrl);
                 intent.putExtra("Port", port);
 

@@ -14,16 +14,12 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,33 +32,32 @@ import java.net.UnknownHostException;
 import my.wificar.R;
 
 public class MyVideo extends Activity {
-    public boolean runningToFront = false;
-    public boolean runningToBack = false;
-    private final long intervalTime = 100;
-    private Button TakePhotos;
-    private Button ViewPhotos;
-    //控制车的方向按钮
-    private Button BtnForward, BtnBackward, BtnLeft, BtnRight, BtnStop;
-    //控制摄像头方向按钮
-    private Button BtnTurnUp, BtnTurnDown, BtnTurnLeft, BtnTurnRight, BtnReset;
+    public static String cameraIp;
+    public static String ctrlIp;
+    public static String ctrlPort;
     //水平角度和垂直角度
     private static byte horiAngle = 0x00, virAngle = 0x00;
-
-    private URL videoUrl;
-    public static String CameraIp;
-    public static String CtrlIp;
-    public static String CtrlPort;
+    private final long intervalTime = 100;
+    public boolean runningToFront = false;
+    public boolean runningToBack = false;
     MySurfaceView mySurfaceView;
-    private Socket socket;
     //发送指令
     OutputStream sendSocket;
     //读取数据
     InputStream receiveSocket;
+    private Button takePhotos;
+    private Button viewPhotos;
+    //控制车的方向按钮
+    private Button btnForward, btnBackward, btnLeft, btnRight, btnStop;
+    //控制摄像头方向按钮
+    private Button btnTurnUp, btnTurnDown, btnTurnLeft, btnTurnRight, btnReset;
+    private URL videoUrl;
+    private Socket socket;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
-    private GoogleApiClient client;
+    private long exitTime = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,26 +72,23 @@ public class MyVideo extends Activity {
         }
 
         Intent intent = getIntent();
-        CameraIp = intent.getStringExtra("CameraIp");
-        CtrlIp = intent.getStringExtra("ControlUrl");
-        CtrlPort = intent.getStringExtra("Port");
-        Log.d("wifirobot", "IP address is : " + CtrlIp);
-        Log.d("wifirobot", "Port is : " + CtrlPort);
+        cameraIp = intent.getStringExtra("cameraIp");
+        ctrlIp = intent.getStringExtra("ControlUrl");
+        ctrlPort = intent.getStringExtra("Port");
+        Log.d("wifirobot", "IP address is : " + ctrlIp);
+        Log.d("wifirobot", "Port is : " + ctrlPort);
         initSocket();
         initView();
         initEvents();
         // 从Intent当中根据key取得value
-        mySurfaceView.GetCameraIP(CameraIp);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        mySurfaceView.GetCameraIP(cameraIp);
     }
 
     public boolean initSocket() {
         Exception exception = null;
 
         try {
-            socket = new Socket(InetAddress.getByName(CtrlIp), Integer.parseInt(CtrlPort));
+            socket = new Socket(InetAddress.getByName(ctrlIp), Integer.parseInt(ctrlPort));
         } catch (UnknownHostException e) {
             exception = e;
             e.printStackTrace();
@@ -125,8 +117,6 @@ public class MyVideo extends Activity {
 
     }
 
-    private long exitTime = 0;
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK
@@ -149,23 +139,23 @@ public class MyVideo extends Activity {
 
     private void initView() {
         mySurfaceView = (MySurfaceView) findViewById(R.id.mySurfaceViewVideo);
-        TakePhotos = (Button) findViewById(R.id.TakePhoto);
-        ViewPhotos = (Button) findViewById(R.id.ViewPhoto);
+        takePhotos = (Button) findViewById(R.id.take_photo);
+        viewPhotos = (Button) findViewById(R.id.view_photo);
 
-        BtnForward = (Button) findViewById(R.id.button_forward);
-        BtnBackward = (Button) findViewById(R.id.button_backward);
-        BtnLeft = (Button) findViewById(R.id.button_left);
-        BtnRight = (Button) findViewById(R.id.button_right);
-        BtnStop = (Button) findViewById(R.id.button_stop);
+        btnForward = (Button) findViewById(R.id.button_forward);
+        btnBackward = (Button) findViewById(R.id.button_backward);
+        btnLeft = (Button) findViewById(R.id.button_left);
+        btnRight = (Button) findViewById(R.id.button_right);
+        btnStop = (Button) findViewById(R.id.button_stop);
 
         /**
          * 摄像头控制按钮初始化
          */
-        this.BtnTurnLeft = (Button) this.findViewById(R.id.button_turnLeft);
-        this.BtnReset = (Button) this.findViewById(R.id.button_resume);
-        this.BtnTurnRight = (Button) this.findViewById(R.id.button_turnRight);
-        this.BtnTurnUp = (Button) this.findViewById(R.id.button_turnUp);
-        this.BtnTurnDown = (Button) this.findViewById(R.id.button_turnDown);
+        this.btnTurnLeft = (Button) this.findViewById(R.id.button_turnLeft);
+        this.btnReset = (Button) this.findViewById(R.id.button_reset);
+        this.btnTurnRight = (Button) this.findViewById(R.id.button_turnRight);
+        this.btnTurnUp = (Button) this.findViewById(R.id.button_turnUp);
+        this.btnTurnDown = (Button) this.findViewById(R.id.button_turnDown);
 
     }
 
@@ -174,7 +164,7 @@ public class MyVideo extends Activity {
          * 控制小车方向
          */
 
-        BtnForward.setOnClickListener(new OnClickListener() {
+        btnForward.setOnClickListener(new OnClickListener() {
 
             public void onClick(View arg0) {
                 Log.e("log", "forward a little");
@@ -193,7 +183,7 @@ public class MyVideo extends Activity {
             }
         });
 
-        BtnForward.setOnLongClickListener(new View.OnLongClickListener() {
+        btnForward.setOnLongClickListener(new View.OnLongClickListener() {
             public boolean onLongClick(View v) {
                 checkeSocket();
                 Log.e("log", "forward continued");
@@ -210,7 +200,7 @@ public class MyVideo extends Activity {
             }
         });
 
-        BtnBackward.setOnClickListener(new OnClickListener() {
+        btnBackward.setOnClickListener(new OnClickListener() {
 
             public void onClick(View arg0) {
                 checkeSocket();
@@ -231,7 +221,7 @@ public class MyVideo extends Activity {
         });
 
 
-        BtnBackward.setOnLongClickListener(new View.OnLongClickListener() {
+        btnBackward.setOnLongClickListener(new View.OnLongClickListener() {
             public boolean onLongClick(View v) {
                 checkeSocket();
                 Log.e("log", "backward");
@@ -248,44 +238,44 @@ public class MyVideo extends Activity {
             }
         });
 
-        BtnRight.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.i("log", "action_down");
-                    return false;
-                }
+//        btnRight.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    Log.i("log", "action_down");
+//                    return false;
+//                }
+//
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    Log.i("log", "action_up");
+//                    return false;
+//                }
+//
+//                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+//                    Log.i("log", "action_move");
+//                    checkeSocket();
+//                    Log.i("log", "Trun right in a big angle ");
+//                    try {
+//                        sendSocket.write(Commands.CARRIGHT);
+//                        new Thread().sleep(intervalTime);
+//                        if (runningToFront == true) {
+//                            sendSocket.write(Commands.CARFORWARD);
+//                        } else if (runningToBack == true) {
+//                            sendSocket.write(Commands.CARRETREAT);
+//                        } else {
+//                            sendSocket.write(Commands.CARSTOP);
+//                        }
+//                        sendSocket.flush();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                        Log.e("log", "Trun right exception = " + e);
+//                    }
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.i("log", "action_up");
-                    return false;
-                }
-
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    Log.i("log", "action_move");
-                    checkeSocket();
-                    Log.i("log", "Trun right in a big angle ");
-                    try {
-                        sendSocket.write(Commands.CARRIGHT);
-                        new Thread().sleep(intervalTime);
-                        if (runningToFront == true) {
-                            sendSocket.write(Commands.CARFORWARD);
-                        } else if (runningToBack == true) {
-                            sendSocket.write(Commands.CARRETREAT);
-                        } else {
-                            sendSocket.write(Commands.CARSTOP);
-                        }
-                        sendSocket.flush();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Log.e("log", "Trun right exception = " + e);
-                    }
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        BtnRight.setOnClickListener(new OnClickListener() {
+        btnRight.setOnClickListener(new OnClickListener() {
                                         public void onClick(View arg0) {
                                             checkeSocket();
                                             Log.e("log", "Turn right");
@@ -310,52 +300,46 @@ public class MyVideo extends Activity {
 
         );
 
-        BtnLeft.setOnKeyListener(new View.OnKeyListener() {
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                return false;
-            }
-        });
+//        btnLeft.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//                    Log.i("log", "Trun left in a big angle");
+//                    checkeSocket();
+//                    Log.e("log", "Trun left");
+//                    try {
+//                        sendSocket.write(Commands.CARLEFT);
+//                        new Thread().sleep(intervalTime);
+//                        if (runningToFront == true) {
+//                            sendSocket.write(Commands.CARLEFTFRONT);
+//                        } else if (runningToBack == true) {
+//                            sendSocket.write(Commands.CARRETREAT);
+//                        } else {
+//                            sendSocket.write(Commands.CARSTOP);
+//                        }
+//                        sendSocket.flush();
+//                    } catch (Exception e) {
+//                        // TODO Auto-generated catch block
+//                        e.printStackTrace();
+//                        Log.e("error", "Trun left exception = " + e);
+//                    }
+//
+//                    return false;
+//                }
+//
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    Log.i("log", "btnLeft ACTION_UP");
+//                    return false;
+//                }
+//
+//                if (event.getAction() == MotionEvent.ACTION_MOVE) {
+//                    Log.i("log", "btnLeft ACTION_MOVE");
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
-        BtnLeft.setOnTouchListener(new View.OnTouchListener() {
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.i("log", "BtnLeft ACTION_DOWN");
-                    return false;
-                }
-
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    Log.i("log", "BtnLeft ACTION_UP");
-                    return false;
-                }
-
-                if (event.getAction() == MotionEvent.ACTION_MOVE) {
-                    Log.i("log", "Trun left in a big angle");
-                    checkeSocket();
-                    Log.e("log", "Trun left");
-                    try {
-                        sendSocket.write(Commands.CARLEFT);
-                        new Thread().sleep(intervalTime);
-                        if (runningToFront == true) {
-                            sendSocket.write(Commands.CARLEFTFRONT);
-                        } else if (runningToBack == true) {
-                            sendSocket.write(Commands.CARRETREAT);
-                        } else {
-                            sendSocket.write(Commands.CARSTOP);
-                        }
-                        sendSocket.flush();
-                    } catch (Exception e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                        Log.e("error", "Trun left exception = " + e);
-                    }
-
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        BtnLeft.setOnClickListener(new OnClickListener() {
+        btnLeft.setOnClickListener(new OnClickListener() {
 
                                        public void onClick(View arg0) {
                                            checkeSocket();
@@ -381,55 +365,51 @@ public class MyVideo extends Activity {
                                    }
 
         );
-        BtnStop.setOnClickListener(new
+        btnStop.setOnClickListener(new OnClickListener() {
 
-                                           OnClickListener() {
-
-                                               public void onClick(View arg0) {
-                                                   checkeSocket();
-                                                   Log.e("log", "stop");
-                                                   // TODO Auto-generated method stub
-                                                   try {
-                                                       sendSocket.write(Commands.CARSTOP);
-                                                       sendSocket.flush();
-                                                       runningToBack = false;
-                                                       runningToFront = false;
-                                                   } catch (Exception e) {
-                                                       // TODO Auto-generated catch block
-                                                       e.printStackTrace();
-                                                       Log.e("error", "stop exception = " + e);
-                                                   }
-                                               }
-
+                                       public void onClick(View arg0) {
+                                           checkeSocket();
+                                           Log.e("log", "stop");
+                                           // TODO Auto-generated method stub
+                                           try {
+                                               sendSocket.write(Commands.CARSTOP);
+                                               sendSocket.flush();
+                                               runningToBack = false;
+                                               runningToFront = false;
+                                           } catch (Exception e) {
+                                               // TODO Auto-generated catch block
+                                               e.printStackTrace();
+                                               Log.e("error", "stop exception = " + e);
                                            }
+                                       }
+
+                                   }
 
         );
-        TakePhotos.setOnClickListener(new
+        takePhotos.setOnClickListener(new OnClickListener() {
 
-                                              OnClickListener() {
-
-                                                  public void onClick(View arg0) {
-                                                      checkeSocket();
-                                                      Log.e("log", "TakePhotos");
-                                                      // TODO Auto-generated method stub
-                                                      if (null != Constant.handler) {
-                                                          Message message = new Message();
-                                                          message.what = 1;
-                                                          Constant.handler.sendMessage(message);
-                                                      }
-                                                  }
-
+                                          public void onClick(View arg0) {
+                                              checkeSocket();
+                                              Log.e("log", "takePhotos");
+                                              // TODO Auto-generated method stub
+                                              if (null != Constant.handler) {
+                                                  Message message = new Message();
+                                                  message.what = 1;
+                                                  Constant.handler.sendMessage(message);
                                               }
+                                          }
+
+                                      }
 
         );
 
-        ViewPhotos.setOnClickListener(new
+        viewPhotos.setOnClickListener(new
 
                                               OnClickListener() {
 
                                                   public void onClick(View arg0) {
                                                       checkeSocket();
-                                                      Log.e("error", "ViewPhotos");
+                                                      Log.e("error", "viewPhotos");
                                                       // TODO Auto-generated method stub
                                                       Intent intent = new Intent();
                                                       intent.setClass(MyVideo.this, BgPictureShowActivity.class);
@@ -446,12 +426,12 @@ public class MyVideo extends Activity {
          * 控制摄像头方向
          */
         //复位
-        this.BtnReset.setOnClickListener(new
+        this.btnReset.setOnClickListener(new
 
                                                  OnClickListener() {
                                                      public void onClick(View arg0) {
                                                          checkeSocket();
-                                                         Log.e("log", "BtnReset");
+                                                         Log.e("log", "btnReset");
                                                          try {
                                                              //舵机7
                                                              sendSocket.write(new byte[]{(byte) 0xff, (byte) 0x01,
@@ -462,7 +442,7 @@ public class MyVideo extends Activity {
                                                              sendSocket.flush();
                                                          } catch (Exception e) {
                                                              e.printStackTrace();
-                                                             Log.e("error", "BtnReset exception = " + e);
+                                                             Log.e("error", "btnReset exception = " + e);
                                                          }
                                                      }
                                                  }
@@ -470,12 +450,12 @@ public class MyVideo extends Activity {
         );
 
         //上转
-        this.BtnTurnUp.setOnClickListener(new OnClickListener()
+        this.btnTurnUp.setOnClickListener(new OnClickListener()
 
                                           {
                                               public void onClick(View arg0) {
                                                   checkeSocket();
-                                                  Log.e("log", "BtnTurnUp");
+                                                  Log.e("log", "btnTurnUp");
                                                   try {
                                                       //舵机8
                                                       virAngle += 10;
@@ -484,7 +464,7 @@ public class MyVideo extends Activity {
                                                       sendSocket.flush();
                                                   } catch (Exception e) {
                                                       e.printStackTrace();
-                                                      Log.e("error", "BtnTurnUp exception = " + e);
+                                                      Log.e("error", "btnTurnUp exception = " + e);
                                                   }
                                               }
                                           }
@@ -492,7 +472,7 @@ public class MyVideo extends Activity {
         );
 
         //下转
-        this.BtnTurnDown.setOnClickListener(new OnClickListener()
+        this.btnTurnDown.setOnClickListener(new OnClickListener()
 
                                             {
                                                 public void onClick(View arg0) {
@@ -507,7 +487,7 @@ public class MyVideo extends Activity {
 //				Log.e("test", "read Data end");
 
 
-                                                    Log.e("test", "BtnTurnDown");
+                                                    Log.e("test", "btnTurnDown");
                                                     try {
                                                         //舵机8
                                                         virAngle -= 15;
@@ -516,7 +496,7 @@ public class MyVideo extends Activity {
                                                         sendSocket.flush();
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
-                                                        Log.e("error", "BtnTurnDown exception = " + e);
+                                                        Log.e("error", "btnTurnDown exception = " + e);
                                                     }
                                                 }
                                             }
@@ -524,12 +504,12 @@ public class MyVideo extends Activity {
         );
 
         //左转
-        this.BtnTurnLeft.setOnClickListener(new OnClickListener()
+        this.btnTurnLeft.setOnClickListener(new OnClickListener()
 
                                             {
                                                 public void onClick(View arg0) {
                                                     checkeSocket();
-                                                    Log.e("log", "BtnTurnLeft");
+                                                    Log.e("log", "btnTurnLeft");
                                                     try {
                                                         //舵机7
                                                         horiAngle -= 15;
@@ -538,7 +518,7 @@ public class MyVideo extends Activity {
                                                         sendSocket.flush();
                                                     } catch (Exception e) {
                                                         e.printStackTrace();
-                                                        Log.e("error", "BtnTurnLeft exception = " + e);
+                                                        Log.e("error", "btnTurnLeft exception = " + e);
                                                     }
                                                 }
                                             }
@@ -546,12 +526,10 @@ public class MyVideo extends Activity {
         );
 
         //右转
-        this.BtnTurnRight.setOnClickListener(new OnClickListener()
-
-                                             {
+        this.btnTurnRight.setOnClickListener(new OnClickListener() {
                                                  public void onClick(View arg0) {
                                                      checkeSocket();
-                                                     Log.e("log", "BtnTurnRight");
+                                                     Log.e("log", "btnTurnRight");
                                                      try {
                                                          //舵机7
                                                          horiAngle += 15;
@@ -560,7 +538,7 @@ public class MyVideo extends Activity {
                                                          sendSocket.flush();
                                                      } catch (Exception e) {
                                                          e.printStackTrace();
-                                                         Log.e("error", "BtnTurnRight exception = " + e);
+                                                         Log.e("error", "btnTurnRight exception = " + e);
                                                      }
                                                  }
                                              }

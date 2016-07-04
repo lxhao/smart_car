@@ -58,32 +58,34 @@ containing a value of this type.
         public static final int icon=0x7f020002;
     }
     public static final class id {
-        public static final int TakePhoto=0x7f070009;
-        public static final int ViewPhoto=0x7f07000a;
         public static final int adjust_height=0x7f070000;
         public static final int adjust_width=0x7f070001;
-        public static final int button_backward=0x7f070011;
-        public static final int button_forward=0x7f07000d;
+        public static final int button_backward=0x7f070012;
+        public static final int button_forward=0x7f07000e;
         public static final int button_go=0x7f070007;
-        public static final int button_left=0x7f07000e;
-        public static final int button_resume=0x7f070015;
-        public static final int button_right=0x7f070010;
-        public static final int button_stop=0x7f07000f;
-        public static final int button_turnDown=0x7f070017;
-        public static final int button_turnLeft=0x7f070014;
+        public static final int button_left=0x7f07000f;
+        public static final int button_reset=0x7f070017;
+        public static final int button_right=0x7f070011;
+        public static final int button_stop=0x7f070010;
+        public static final int button_turnDown=0x7f070019;
+        public static final int button_turnLeft=0x7f070018;
         public static final int button_turnRight=0x7f070016;
-        public static final int button_turnUp=0x7f070013;
-        public static final int controlButton=0x7f07000c;
+        public static final int button_turnUp=0x7f070015;
+        public static final int camera_ctrl=0x7f070014;
+        public static final int car_ctrl=0x7f07000c;
+        public static final int control_button=0x7f07000d;
         public static final int editIP=0x7f070004;
         public static final int ip=0x7f070005;
         public static final int mySurfaceViewVideo=0x7f070008;
-        public static final int mygallery=0x7f070019;
+        public static final int mygallery=0x7f07001b;
         public static final int none=0x7f070002;
         public static final int port=0x7f070006;
-        public static final int showControlButton=0x7f07000b;
-        public static final int showVideoButton=0x7f070012;
-        public static final int switcher=0x7f070018;
+        public static final int show_Video_button=0x7f070013;
+        public static final int show_control_button=0x7f07000b;
+        public static final int switcher=0x7f07001a;
+        public static final int take_photo=0x7f070009;
         public static final int textViewIP=0x7f070003;
+        public static final int view_photo=0x7f07000a;
     }
     public static final class integer {
         public static final int google_play_services_version=0x7f060000;
