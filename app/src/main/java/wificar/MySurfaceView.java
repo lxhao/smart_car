@@ -260,7 +260,6 @@ public class MySurfaceView extends SurfaceView implements Callback {
                                         } else {
                                             if (buffer[i] != (byte) 0xFF)
                                                 status = 15;
-
                                         }
                                         break;
                                     case 17:
